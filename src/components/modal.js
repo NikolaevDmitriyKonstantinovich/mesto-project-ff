@@ -9,12 +9,23 @@ export function escEvent(evt) {
     }
 }
 
-// перенести в опенпопап и клоспопап
+
 
 
 export function openPopup(win) {
     win.classList.add('popup_is-opened');
     document.addEventListener('keydown', escEvent);
+
+    const btn = win.querySelector('.popup__button');
+    if(btn !== null) {
+        btn.disabled = true;
+        btn.classList.add('btn__submit_inactive');
+    }
+    const remainsErrors = win.querySelectorAll('.form_name__input-error');
+
+    remainsErrors.forEach((element) => {
+        element.textContent = '';
+    });
 }
 
 export function closePopup(win) {

@@ -7,6 +7,23 @@
   background-size: cover;
   background-position: center;
   margin: 0 29px 0 0;
+  position: relative;
+}
+.profile__image:hover {
+  opacity: 0.6;
+  z-index: 0;
+}
+
+.brush__logo {
+  display: none;
+}
+
+.profile__image:hover .brush__logo {
+  display: flex;
+  position: absolute;
+  z-index: 10;
+  top: 45px;
+  left: 45px;
 }
 
 @media screen and (max-width: 740px) {
