@@ -1,6 +1,16 @@
 const token = "f9abb9cd-6bca-4f92-b508-e5a8964bae2f";
 const groupId = "wff-cohort-10";
 
+
+const config = {
+    baseUrl: 'https://nomoreparties.co/v1/wff-cohort-10',
+    headers: {
+      authorization: 'f9abb9cd-6bca-4f92-b508-e5a8964bae2f',
+      'Content-Type': 'application/json',
+    },
+  };
+  
+
 const handleResponse = (res) => {
     if(res.ok) {
         return res.json();
@@ -8,42 +18,28 @@ const handleResponse = (res) => {
     return Promise.reject(`Ошибка: ${res.status}`);
 }
 
-const getInitialCards = () => {
-  return fetch("https://nomoreparties.co/v1/cohort-42/cards", {
-    headers: {
-      authorization: "c56e30dc-2883-4270-a59e-b2f7bae969c6",
-    },
-  })
-    .then(handleResponse)
-};
+
 
 export const getUserInfo = () => {
-  return fetch("https://nomoreparties.co/v1/wff-cohort-10/users/me", {
+  return fetch(`${config.baseUrl}` + "/users/me", {
     method: "GET",
-    headers: {
-      authorization: "f9abb9cd-6bca-4f92-b508-e5a8964bae2f",
-    },
+    headers: config.headers,
   })
     .then(handleResponse)
 };
 
 export const getCardInfo = () => {
-  return fetch("https://nomoreparties.co/v1/wff-cohort-10/cards", {
+  return fetch(`${config.baseUrl}` + "/cards", {
     method: "GET",
-    headers: {
-      authorization: "f9abb9cd-6bca-4f92-b508-e5a8964bae2f",
-    },
+    headers: config.headers,
   })
     .then(handleResponse)
 };
 
 export const getProfileIntel = (name, about) => {
-  return fetch("https://nomoreparties.co/v1/wff-cohort-10/users/me ", {
+  return fetch(`${config.baseUrl}` + "/users/me", {
     method: "PATCH",
-    headers: {
-      authorization: "f9abb9cd-6bca-4f92-b508-e5a8964bae2f",
-      "Content-Type": "application/json",
-    },
+    headers: config.headers,
     body: JSON.stringify({
       name: name,
       about: about,
@@ -52,12 +48,9 @@ export const getProfileIntel = (name, about) => {
 };
 
 export const addNewCardToServer = (name, link) => {
-    return fetch('https://nomoreparties.co/v1/wff-cohort-10/cards', {
+    return fetch(`${config.baseUrl}` + '/cards', {
         method: "POST",
-        headers: {
-            authorization: "f9abb9cd-6bca-4f92-b508-e5a8964bae2f",
-            "Content-Type": "application/json",
-          },
+        headers: config.headers,
           body: JSON.stringify({
             name: name,
             link: link,
@@ -66,42 +59,33 @@ export const addNewCardToServer = (name, link) => {
 }
 
 export const deleteCard = (id) => {
-    return fetch(`https://nomoreparties.co/v1/wff-cohort-10/cards/${id}`, {
+    return fetch(`${config.baseUrl}` + `/cards/${id}`, {
         method: 'DELETE',
-        headers: {
-            authorization: "f9abb9cd-6bca-4f92-b508-e5a8964bae2f"
-        },
+        headers: config.headers,
     })
     .then(handleResponse)
 }
 
 export const cardLike = (id) => {
-    return fetch(`https://nomoreparties.co/v1/wff-cohort-10/cards/likes/${id}`, {
+    return fetch(`${config.baseUrl}` + `/cards/likes/${id}`, {
         method: 'PUT',
-        headers: {
-            authorization: "f9abb9cd-6bca-4f92-b508-e5a8964bae2f"
-        },
+        headers: config.headers,
     })
     .then(handleResponse)
 }
 
 export const deleteCardLike = (id) => {
-    return fetch(`https://nomoreparties.co/v1/wff-cohort-10/cards/likes/${id}`, {
+    return fetch(`${config.baseUrl}` + `/cards/likes/${id}`, {
         method: 'DELETE',
-        headers: {
-            authorization: "f9abb9cd-6bca-4f92-b508-e5a8964bae2f"
-        },
+        headers: config.headers,
     })
     .then(handleResponse)
 }
 
 export const newAvatar = (avatar) => {
-    return fetch('https://nomoreparties.co/v1/wff-cohort-10/users/me/avatar', {
+    return fetch(`${config.baseUrl}` + '/users/me/avatar', {
         method: 'PATCH',
-        headers: {
-            authorization: "f9abb9cd-6bca-4f92-b508-e5a8964bae2f",
-            "Content-Type": "application/json",
-        },
+        headers: config.headers,
         body: JSON.stringify({
             avatar: avatar,
           }),

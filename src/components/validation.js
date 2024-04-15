@@ -38,12 +38,17 @@ function hideInputError(formElement, inputElement) {
     errorElement.classList.remove('form__input-error_active');
 }
 
-function enableValidation() {
-    //сделать об
+const validationObjects = {
+    editFormElement: '.popup__form',
+    editFormInputName: '.popup__input_type_name',
+    editFormInputError: '.form_name__input-error',
+}
+function enableValidation(array) {
+
 }
 
 function clearValidation() {
-    // сделать от
+    
 }
 
 const isValid = (formElement, inputElement) => {

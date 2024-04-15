@@ -52,42 +52,65 @@ const addCardUrl = document.querySelector(".popup__input_type_url");
 
 // api
 
-
 const profileImg = document.querySelector(".profile__image");
-
 
 // new popup avatar
 
+const popupAvatar = document.querySelector(".popup_type_new-avatar");
+const avatarImg = document.querySelector(".profile__image");
 
-const popupAvatar = document.querySelector('.popup_type_new-avatar');
-const avatarImg = document.querySelector('.profile__image');
+const closePopupAvatar = popupAvatar.querySelector(".popup__close");
 
-const closePopupAvatar = popupAvatar.querySelector('.popup__close');
+const popupFormAvatar = document.querySelector(
+  ".popup_type_new-avatar .popup__form"
+);
+const popupFormUrlAvatar = popupFormAvatar.querySelector(
+  ".popup__input_type_url"
+);
+const newPlaceSbmtBtn = document.querySelector(
+  ".popup_type_new-card .popup__form .popup__button"
+);
+const profileSbmtBtn = document.querySelector(
+  ".popup_type_edit .popup__form .popup__button"
+);
 
-const popupFormAvatar = document.querySelector(".popup_type_new-avatar .popup__form");
-const popupFormUrlAvatar = popupFormAvatar.querySelector('.popup__input_type_url');
+const logoSbmtBtn = document.querySelector(
+  ".popup_type_new-avatar .popup__form .popup__button"
+);
 
 //implement function add
 
 //create function for delete card
 
-
 //add card
-
+const userInfoId = api.getUserInfo()["_id"];
 function handleAddSubmit(evt) {
+  newPlaceSbmtBtn.textContent = "Сохранение...";
   evt.preventDefault();
-  cardsContainer.prepend(
-    createCard(
-      document.querySelector(".popup__input_type_card-name").value,
-      document.querySelector(".popup__input_type_url").value,
-      '0',
-      api.deleteCard,
-      api.cardLike,
-      openImage
-    )
-  );
-  api.addNewCardToServer(document.querySelector(".popup__input_type_card-name").value, document.querySelector(".popup__input_type_url").value); // new
-  data.closePopup(popupNewCard);
+
+  const nameOfCard = document.querySelector(".popup__input_type_card-name");
+  const urlOfCard = document.querySelector(".popup__input_type_url");
+  api
+    .addNewCardToServer(nameOfCard.value, urlOfCard.value)
+    .then((res) => {
+      const card = createCard(
+        api.deleteCard,
+        api.cardLike,
+        openImage,
+        res?.owner?._id,
+        res
+      );
+      cardsContainer.prepend(card);
+      console.log(userInfoId);
+      data.closePopup(popupNewCard);
+    })
+    .catch((err) => {
+      console.log(err);
+    })
+    .finally(() =>
+      setTimeout(() => (newPlaceSbmtBtn.textContent = "Сохранить"), 2000)
+    );
+
 }
 
 popupNewCardForm.addEventListener("submit", handleAddSubmit);
@@ -128,15 +151,13 @@ imageCloseBtn.addEventListener("click", function () {
 
 //new listener avatar
 
-avatarImg.addEventListener('click', function() {
-    data.openPopup(popupAvatar);
+avatarImg.addEventListener("click", function () {
+  data.openPopup(popupAvatar);
 });
 
 closePopupAvatar.addEventListener("click", function () {
-    data.closePopup(popupAvatar);
-  });
-
-
+  data.closePopup(popupAvatar);
+});
 
 //forms
 
@@ -148,11 +169,21 @@ function fillEditForm() {
 //fun for change
 
 function handleProfileFormSubmit(evt) {
+  profileSbmtBtn.textContent = "Сохранение...";
   evt.preventDefault();
-  profileTitle.textContent = editFormElemInpt.value;
-  profileDesc.textContent = formInptDesc.value;
-  api.getProfileIntel(editFormElemInpt.value, formInptDesc.value);  // отправка patch на север
-  data.closePopup(popupEdit);
+  api
+    .getProfileIntel(editFormElemInpt.value, formInptDesc.value) // отправка patch на север
+    .then((res) => {
+      profileTitle.textContent = editFormElemInpt.value;
+      profileDesc.textContent = formInptDesc.value;
+      data.closePopup(popupEdit);
+    })
+    .catch((err) => {
+      console.log(err);
+    })
+    .finally(() =>
+      setTimeout(() => (profileSbmtBtn.textContent = "Сохранить"), 2000)
+    );
 }
 
 popupFormEdt.addEventListener("submit", handleProfileFormSubmit);
@@ -160,13 +191,23 @@ popupFormEdt.addEventListener("submit", handleProfileFormSubmit);
 //add listener to avatar form
 
 function handleAvatarFormSubmit(evt) {
-    evt.preventDefault();
-    avatarImg.style.backgroundImage = `url(${popupFormUrlAvatar.value})`;
-    api.newAvatar(popupFormUrlAvatar.value);
-    data.closePopup(popupAvatar);
+  logoSbmtBtn.textContent = "Сохранение...";
+  evt.preventDefault();
+  api
+    .newAvatar(popupFormUrlAvatar.value)
+    .then((res) => {
+      avatarImg.style.backgroundImage = `url(${popupFormUrlAvatar.value})`;
+      data.closePopup(popupAvatar);
+    })
+    .catch((err) => {
+      console.log(err);
+    })
+    .finally(() =>
+      setTimeout(() => (logoSbmtBtn.textContent = "Сохранить"), 2000)
+    );
 }
 
-popupFormAvatar.addEventListener('submit', handleAvatarFormSubmit);
+popupFormAvatar.addEventListener("submit", handleAvatarFormSubmit);
 
 function animatedPopup() {
   popupEdit.classList.add("popup_is-animated");
@@ -178,25 +219,23 @@ animatedPopup();
 
 //api methods
 
-
 // load user info
 
-
-
-
 Promise.all([api.getCardInfo(), api.getUserInfo()])
-.then(([resp1, resp2]) => {
+  .then(([resp1, resp2]) => {
     resp1.forEach((card) => {
-        cardsContainer.append(
-            createCard(card.name, card.link, card.likes.length, api.deleteCard, api.cardLike, openImage, card.owner['_id'], resp2['_id'], card['_id'], Array.from(card.likes))
-          );
-          console.log(card.likes.length)
-    })
+      cardsContainer.append(
+        createCard(api.deleteCard, api.cardLike, openImage, resp2["_id"], card)
+      );
+      console.log(card.likes.length);
+    });
     console.log(resp1);
 
     profileTitle.textContent = resp2.name;
     profileDesc.textContent = resp2.about;
     avatarImg.style.backgroundImage = `url(${resp2.avatar})`;
     console.log(resp2);
-
-});
+  })
+  .catch((err) => {
+    console.log(err);
+  });
