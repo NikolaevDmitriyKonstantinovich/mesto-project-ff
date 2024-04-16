@@ -44,7 +44,8 @@ export const getProfileIntel = (name, about) => {
       name: name,
       about: about,
     }),
-  });
+  })
+  .then(handleResponse)
 };
 
 export const addNewCardToServer = (name, link) => {
@@ -55,7 +56,8 @@ export const addNewCardToServer = (name, link) => {
             name: name,
             link: link,
           }),
-    });
+    })
+    .then(handleResponse)
 }
 
 export const deleteCard = (id) => {
@@ -90,8 +92,5 @@ export const newAvatar = (avatar) => {
             avatar: avatar,
           }),
     })
-    // .then((res) => res.json())
-    // .catch((err) => {
-    //   console.log("Ошибка. Запрос не выполнен");
-    // });
+    .then(handleResponse)
 }

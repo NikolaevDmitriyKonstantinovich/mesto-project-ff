@@ -239,3 +239,7 @@ Promise.all([api.getCardInfo(), api.getUserInfo()])
   .catch((err) => {
     console.log(err);
   });
+
+  
+// у меня работают лайки и удаление карточек, ошибок нет
+//и кнопки удаления всегда появляются
