@@ -43,13 +43,8 @@ const validationObjects = {
     editFormInputName: '.popup__input_type_name',
     editFormInputError: '.form_name__input-error',
 }
-function enableValidation(array) {
 
-}
 
-function clearValidation() {
-    
-}
 
 const isValid = (formElement, inputElement) => {
     if(!inputElement.validity.valid) {
@@ -64,14 +59,20 @@ const isValid = (formElement, inputElement) => {
     }
 }
 
+const optionsObject = {
+    formSelector: '.popup__form',
+    inputSelector: '.popup__input',
+    submitButtonSelector: '.popup__button',
+    inputName: '.popup__input_type_name',
+    inputDescription: '.popup__input_type_description'
+};
 
 
-
-function setEventListeners(formElement) {
-    const inputName = document.querySelector('.popup__input_type_name');
-    const inputDescription = document.querySelector('.popup__input_type_description');
-    const popupInputList = Array.from(formElement.querySelectorAll('.popup__input'));
-    const btnElement = formElement.querySelector('.popup__button');
+function setEventListeners(formElement, options) {
+    const inputName = document.querySelector(options.inputName);
+    const inputDescription = document.querySelector(options.inputDescription);
+    const popupInputList = Array.from(formElement.querySelectorAll(options.inputSelector));
+    const btnElement = formElement.querySelector(options.submitButtonSelector);
     popupInputList.forEach((element) => {
         element.addEventListener('input', () => {
             isValid(formElement, element);
@@ -100,10 +101,12 @@ function customValidation(formElement) {
 
 }
 
-const enableFormValidation = () => {
-    const popupFormList = Array.from(document.querySelectorAll('.popup__form'));
+
+
+const enableValidation = (options) => {
+    const popupFormList = Array.from(document.querySelectorAll(options.formSelector));
     popupFormList.forEach((element) => {
-        setEventListeners(element);
+        setEventListeners(element, options);
         // setEventListenersToInput(element);
     });
 
@@ -125,7 +128,7 @@ function toggleBtnState(list, btn) {
     }
 }
 
-enableFormValidation();
+enableValidation(optionsObject);
 
 
 //....................
