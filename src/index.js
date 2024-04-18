@@ -12,9 +12,13 @@
 
 import { initialCards } from "./components/cards.js";
 import "./pages/index.css";
-import * as data from "./components/modal.js";
+import {
+  openPopup,
+  closePopup,
+  closePopupByOverlay,
+} from "./components/modal.js";
 import { createCard, deleteCard, cardLike } from "./components/card.js";
-import "./components/validation.js";
+import { optionsObject, enableValidation } from "./components/validation.js";
 import * as api from "./components/api.js";
 
 const cardsContainer = document.querySelector(".places__list");
@@ -24,12 +28,12 @@ const cardsContainer = document.querySelector(".places__list");
 const addButton = document.querySelector(".profile__add-button");
 const editButton = document.querySelector(".profile__edit-button");
 
-export const popupNewCard = document.querySelector(".popup_type_new-card");
+const popupNewCard = document.querySelector(".popup_type_new-card");
 const newCardCloseBtn = popupNewCard.querySelector(".popup__close");
 
-export const popupEdit = document.querySelector(".popup_type_edit");
+const popupEdit = document.querySelector(".popup_type_edit");
 const editCloseBtn = popupEdit.querySelector(".popup__close");
-export const popupImage = document.querySelector(".popup_type_image");
+const popupImage = document.querySelector(".popup_type_image");
 const imageCloseBtn = popupImage.querySelector(".popup__close");
 
 const profileInf = document.querySelector(".profile__info");
@@ -45,14 +49,12 @@ const formInptDesc = popupFormEdt.querySelector(
 
 //add form
 const popupCardContent = popupNewCard.querySelector(".popup__content");
-export const popupNewCardForm = popupCardContent.querySelector(".popup__form");
+const popupNewCardForm = popupCardContent.querySelector(".popup__form");
 
 const addCardName = document.querySelector(".popup__input_type_card-name");
 const addCardUrl = document.querySelector(".popup__input_type_url");
 
 // api
-
-const profileImg = document.querySelector(".profile__image");
 
 // new popup avatar
 
@@ -78,20 +80,24 @@ const logoSbmtBtn = document.querySelector(
   ".popup_type_new-avatar .popup__form .popup__button"
 );
 
+//new select
+
+const imageOfPopup = popupImage.querySelector(".popup__image");
+const popupCaption = popupImage.querySelector(".popup__caption");
+
 //implement function add
 
 //create function for delete card
 
 //add card
-const userInfoId = api.getUserInfo()["_id"];
+let userInfoId;
+
 function handleAddSubmit(evt) {
   newPlaceSbmtBtn.textContent = "Сохранение...";
   evt.preventDefault();
 
-  const nameOfCard = document.querySelector(".popup__input_type_card-name");
-  const urlOfCard = document.querySelector(".popup__input_type_url");
   api
-    .addNewCardToServer(nameOfCard.value, urlOfCard.value)
+    .addNewCardToServer(addCardName.value, addCardUrl.value)
     .then((res) => {
       const card = createCard(
         api.deleteCard,
@@ -101,16 +107,18 @@ function handleAddSubmit(evt) {
         res
       );
       cardsContainer.prepend(card);
-      console.log(userInfoId);
-      data.closePopup(popupNewCard);
+      //   console.log(userInfoId);
+      closePopup(popupNewCard);
     })
     .catch((err) => {
       console.log(err);
     })
-    .finally(() =>
-      setTimeout(() => (newPlaceSbmtBtn.textContent = "Сохранить"), 2000)
+    .finally(
+      () => {
+        newPlaceSbmtBtn.textContent = "Сохранить";
+      }
+      //   setTimeout(() => (newPlaceSbmtBtn.textContent = "Сохранить"), 2000)
     );
-
 }
 
 popupNewCardForm.addEventListener("submit", handleAddSubmit);
@@ -118,45 +126,55 @@ popupNewCardForm.addEventListener("submit", handleAddSubmit);
 //like card
 
 function openImage(name, link) {
-  popupImage.querySelector(".popup__image").src = link;
-  popupImage.querySelector(".popup__image").alt = "Попап карточки";
-  popupImage.querySelector(".popup__caption").textContent = name;
-  data.openPopup(popupImage);
+  imageOfPopup.src = link;
+  imageOfPopup.alt = "Попап карточки";
+  popupCaption.textContent = name;
+  openPopup(popupImage);
 }
 
-document.addEventListener("click", data.closePopupByOverlay);
+// document.addEventListener("click", closePopupByOverlay);
 
 //........
 
 addButton.addEventListener("click", function () {
-  data.openPopup(popupNewCard);
+  addCardName.value = "";
+  addCardUrl.value = "";
+  openPopup(popupNewCard);
+  document.addEventListener("click", closePopupByOverlay);
 });
 
 newCardCloseBtn.addEventListener("click", function () {
-  data.closePopup(popupNewCard);
+  closePopup(popupNewCard);
+  document.removeEventListener("click", closePopupByOverlay);
 });
 
 editButton.addEventListener("click", function () {
   fillEditForm();
-  data.openPopup(popupEdit);
+  openPopup(popupEdit);
+  document.addEventListener("click", closePopupByOverlay);
 });
 
 editCloseBtn.addEventListener("click", function () {
-  data.closePopup(popupEdit);
+  closePopup(popupEdit);
+  document.removeEventListener("click", closePopupByOverlay);
 });
 
 imageCloseBtn.addEventListener("click", function () {
-  data.closePopup(popupImage);
+  closePopup(popupImage);
+  document.removeEventListener("click", closePopupByOverlay);
 });
 
 //new listener avatar
 
 avatarImg.addEventListener("click", function () {
-  data.openPopup(popupAvatar);
+  popupFormUrlAvatar.value = "";
+  openPopup(popupAvatar);
+  document.addEventListener("click", closePopupByOverlay);
 });
 
 closePopupAvatar.addEventListener("click", function () {
-  data.closePopup(popupAvatar);
+  closePopup(popupAvatar);
+  document.removeEventListener("click", closePopupByOverlay);
 });
 
 //forms
@@ -176,14 +194,14 @@ function handleProfileFormSubmit(evt) {
     .then((res) => {
       profileTitle.textContent = editFormElemInpt.value;
       profileDesc.textContent = formInptDesc.value;
-      data.closePopup(popupEdit);
+      closePopup(popupEdit);
     })
     .catch((err) => {
       console.log(err);
     })
-    .finally(() =>
-      setTimeout(() => (profileSbmtBtn.textContent = "Сохранить"), 2000)
-    );
+    .finally(() => {
+      profileSbmtBtn.textContent = "Сохранить";
+    });
 }
 
 popupFormEdt.addEventListener("submit", handleProfileFormSubmit);
@@ -197,49 +215,59 @@ function handleAvatarFormSubmit(evt) {
     .newAvatar(popupFormUrlAvatar.value)
     .then((res) => {
       avatarImg.style.backgroundImage = `url(${popupFormUrlAvatar.value})`;
-      data.closePopup(popupAvatar);
+      closePopup(popupAvatar);
     })
     .catch((err) => {
       console.log(err);
     })
-    .finally(() =>
-      setTimeout(() => (logoSbmtBtn.textContent = "Сохранить"), 2000)
-    );
+    .finally(() => {
+      logoSbmtBtn.textContent = "Сохранить";
+    });
 }
 
 popupFormAvatar.addEventListener("submit", handleAvatarFormSubmit);
 
-function animatedPopup() {
+function animatePopup() {
   popupEdit.classList.add("popup_is-animated");
   popupNewCard.classList.add("popup_is-animated");
   popupImage.classList.add("popup_is-animated");
 }
 
-animatedPopup();
+animatePopup();
 
 //api methods
 
 // load user info
 
 Promise.all([api.getCardInfo(), api.getUserInfo()])
-  .then(([resp1, resp2]) => {
-    resp1.forEach((card) => {
+  .then(([cards, userData]) => {
+    cards.forEach((card) => {
       cardsContainer.append(
-        createCard(api.deleteCard, api.cardLike, openImage, resp2["_id"], card)
+        createCard(
+          api.deleteCard,
+          api.cardLike,
+          openImage,
+          userData["_id"],
+          card
+        )
       );
       console.log(card.likes.length);
     });
-    console.log(resp1);
+    console.log(cards);
 
-    profileTitle.textContent = resp2.name;
-    profileDesc.textContent = resp2.about;
-    avatarImg.style.backgroundImage = `url(${resp2.avatar})`;
-    console.log(resp2);
+    profileTitle.textContent = userData.name;
+    profileDesc.textContent = userData.about;
+    avatarImg.style.backgroundImage = `url(${userData.avatar})`;
+    console.log(userData);
+    userInfoId = userData["_id"];
   })
   .catch((err) => {
     console.log(err);
   });
 
-  
+//-----------------
+enableValidation(optionsObject);
+//-----------------
+
 // у меня работают лайки и удаление карточек, ошибок нет
 //и кнопки удаления всегда появляются
