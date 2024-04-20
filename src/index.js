@@ -18,8 +18,9 @@ import {
   closePopupByOverlay,
 } from "./components/modal.js";
 import { createCard, deleteCard, cardLike } from "./components/card.js";
-import { optionsObject, enableValidation } from "./components/validation.js";
+import { optionsObject, enableValidation,clearValidation } from "./components/validation.js";
 import * as api from "./components/api.js";
+// import { optionsObject, clearValidation } from "./components/validation.js";
 
 const cardsContainer = document.querySelector(".places__list");
 
@@ -127,54 +128,46 @@ popupNewCardForm.addEventListener("submit", handleAddSubmit);
 
 function openImage(name, link) {
   imageOfPopup.src = link;
-  imageOfPopup.alt = "Попап карточки";
+  imageOfPopup.alt = name;
   popupCaption.textContent = name;
   openPopup(popupImage);
 }
 
-// document.addEventListener("click", closePopupByOverlay);
 
 //........
 
 addButton.addEventListener("click", function () {
   addCardName.value = "";
   addCardUrl.value = "";
-  openPopup(popupNewCard);
-  document.addEventListener("click", closePopupByOverlay);
+  openPopupWithForm(popupNewCard);
 });
 
 newCardCloseBtn.addEventListener("click", function () {
   closePopup(popupNewCard);
-  document.removeEventListener("click", closePopupByOverlay);
 });
 
 editButton.addEventListener("click", function () {
   fillEditForm();
-  openPopup(popupEdit);
-  document.addEventListener("click", closePopupByOverlay);
+  openPopupWithForm(popupEdit);
 });
 
 editCloseBtn.addEventListener("click", function () {
   closePopup(popupEdit);
-  document.removeEventListener("click", closePopupByOverlay);
 });
 
 imageCloseBtn.addEventListener("click", function () {
   closePopup(popupImage);
-  document.removeEventListener("click", closePopupByOverlay);
 });
 
 //new listener avatar
 
 avatarImg.addEventListener("click", function () {
   popupFormUrlAvatar.value = "";
-  openPopup(popupAvatar);
-  document.addEventListener("click", closePopupByOverlay);
+  openPopupWithForm(popupAvatar);
 });
 
 closePopupAvatar.addEventListener("click", function () {
   closePopup(popupAvatar);
-  document.removeEventListener("click", closePopupByOverlay);
 });
 
 //forms
@@ -187,7 +180,7 @@ function fillEditForm() {
 //fun for change
 
 function handleProfileFormSubmit(evt) {
-  profileSbmtBtn.textContent = "Сохранение...";
+  evt.submitter.textContent = "Сохранение...";
   evt.preventDefault();
   api
     .getProfileIntel(editFormElemInpt.value, formInptDesc.value) // отправка patch на север
@@ -231,6 +224,7 @@ function animatePopup() {
   popupEdit.classList.add("popup_is-animated");
   popupNewCard.classList.add("popup_is-animated");
   popupImage.classList.add("popup_is-animated");
+  popupAvatar.classList.add("popup_is-animated");
 }
 
 animatePopup();
@@ -269,5 +263,9 @@ Promise.all([api.getCardInfo(), api.getUserInfo()])
 enableValidation(optionsObject);
 //-----------------
 
-// у меня работают лайки и удаление карточек, ошибок нет
-//и кнопки удаления всегда появляются
+function openPopupWithForm(popup) {
+  openPopup(popup)
+  const form = popup.querySelector('.popup__form');
+  clearValidation(form, optionsObject, popup);
+}
+

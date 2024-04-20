@@ -9,29 +9,17 @@ export function handleEscape(evt) {
 export function openPopup(popup) {
   popup.classList.add("popup_is-opened");
   document.addEventListener("keydown", handleEscape);
-  const form = popup.querySelector('.popup__form');
-  if (!popup.classList.contains(".popup_type_image")) {
-    // removeErrors(popup);
-    clearValidation(form, optionsObject, popup);
-  }
-}
-
-function removeErrors(popup) {
-  const btn = popup.querySelector(".popup__button");
-  if (btn !== null) {
-    btn.disabled = true;
-    btn.classList.add("btn__submit_inactive");
-  }
-  const remainsErrors = popup.querySelectorAll(".form_name__input-error");
-
-  remainsErrors.forEach((element) => {
-    element.textContent = "";
-  });
+//   const form = popup.querySelector('.popup__form');
+//   if (!popup.classList.contains(".popup_type_image")) {
+//     clearValidation(form, optionsObject, popup);
+//   }
+  document.addEventListener("click", closePopupByOverlay);
 }
 
 export function closePopup(popup) {
   popup.classList.remove("popup_is-opened");
   document.removeEventListener("keydown", handleEscape);
+  document.removeEventListener("click", closePopupByOverlay);
 }
 
 export function closePopupByOverlay(evt) {

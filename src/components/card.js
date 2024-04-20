@@ -23,8 +23,14 @@ export function createCard(deleteCard, cardLike, openImage, userId, card) {
 
   if (card?.owner?._id === userId) {
     deleteBtn.addEventListener("click", () => {
-      deleteCard(card["_id"]);
-      cardElement.remove();
+      deleteCard(card["_id"])
+      .then((res) => {
+        cardElement.remove();
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+      
     });
   } else {
     deleteBtn.remove();
